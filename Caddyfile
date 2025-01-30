@@ -1,0 +1,27 @@
+{
+    debug
+    log {
+        output stdout
+        format console
+        level DEBUG
+    }
+}
+
+:2080 {
+    reverse_proxy {
+		dynamic srv _tmp._tcp.vesselfunds.dev {
+			refresh 5s
+		}
+
+		fail_duration 30s
+		max_fails 1
+		unhealthy_request_count 1
+
+		lb_policy round_robin
+		# lb_retries 1
+		# lb_try_duration 1s
+		# lb_try_interval 100ms
+    }
+
+
+}
