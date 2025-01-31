@@ -1,0 +1,11 @@
+services:
+  app-server-1:
+    build: .
+    command: ["node", "index.js"]
+    ports:
+      - 3001:3001
+  app-server-2:
+    build: .
+    command: ["node", "index.js", "--fail"]
+    ports:
+      - 3000:3000
