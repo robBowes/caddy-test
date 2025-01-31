@@ -1,27 +1,42 @@
 {
-    debug
-    log {
-        output stdout
-        format console
-        level DEBUG
-    }
+	debug
+	log {
+		output stdout
+		format console
+		level DEBUG
+	}
 }
 
-:2080 {
-    reverse_proxy {
+:2060 {
+	reverse_proxy {
 		dynamic srv _tmp._tcp.vesselfunds.dev {
 			refresh 5s
 		}
+	}
+}
 
-		fail_duration 30s
+:2061 {
+	reverse_proxy {
+		dynamic srv _tmp._tcp2.vesselfunds.dev {
+			refresh 5s
+		}
+	}
+}
+
+:3005 {
+	reverse_proxy {
+		to 0.0.0.0:2060
+		to 0.0.0.0:2061
+
+		health_uri /health
+
+		# Increase these values for more resilient health checking
+		fail_duration 10s
 		max_fails 1
-		unhealthy_request_count 1
+		unhealthy_status 500
+		unhealthy_request_count 3
+		lb_try_duration 10s # Add this to control how long to try unhealthy hosts
 
 		lb_policy round_robin
-		# lb_retries 1
-		# lb_try_duration 1s
-		# lb_try_interval 100ms
-    }
-
-
+	}
 }
